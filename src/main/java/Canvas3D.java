@@ -1,16 +1,16 @@
 import model3D.Cube;
 import model3D.Object3D;
+import model3D.Scene;
 import rasterization.RasterBI;
 import rasterops.rasterize.LinerDDAII;
-import renderer.WiredRenderer;
-import solid.Solid;
-import transforms.Mat4Identity;
-import transforms.Mat4Transl;
+import renderer.Renderer3D;
+import transforms.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 /**
  * @author PGRF FIM UHK
@@ -20,10 +20,16 @@ import java.awt.event.KeyEvent;
 public class Canvas3D {
     private JPanel panel;
     private RasterBI img;
-    private LinerDDAII liner;
-    private WiredRenderer wiredRenderer;
+    private LinerDDAII liner; //TODO make a local variable in drawscene
+    private Renderer3D renderer;
 
+    private Scene scene;
     private Object3D cube;
+
+    Vec3D viewPos;
+    private Camera cam;
+    private Mat4PerspRH projectionMatrix;
+    private Mat4OrthoRH orthMatrix;
     private Color red, green, grey, yellow, purple;
 
 
@@ -57,17 +63,39 @@ public class Canvas3D {
 
         clear();
         initScene();
+        drawScene();
 
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
 
-                if(e.getKeyCode() == KeyEvent.VK_LEFT)
-//                    cube.setModel(cube.getModel().mul(new Mat4Transl(-0.2, 0, 0)));
-                if(e.getKeyCode() == KeyEvent.VK_RIGHT)
-//                    cube.setModel(cube.getModel().mul(new Mat4Transl(0.2, 0, 0)));
+                if(e.getKeyCode() == KeyEvent.VK_LEFT){
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0.05, 0, 0)));
+                }
 
+                if(e.getKeyCode() == KeyEvent.VK_RIGHT)
+                {
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(-0.05, 0, 0)));
+                }
+
+                if(e.getKeyCode() == KeyEvent.VK_UP)
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0, 0.05)));
+                if(e.getKeyCode() == KeyEvent.VK_DOWN)
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0, -0.05)));
+
+                if(e.getKeyCode() == KeyEvent.VK_A){
+                    cam = cam.right(0.1);
+                }
+                if(e.getKeyCode() == KeyEvent.VK_D){
+                    cam = cam.left(0.1);
+                }
+                if(e.getKeyCode() == KeyEvent.VK_W){
+                    cam = cam.forward(0.1);
+                }
+                if(e.getKeyCode() == KeyEvent.VK_S){
+                    cam = cam.backward(0.1);
+                }
                 drawScene();
             }
         });
@@ -79,23 +107,59 @@ public class Canvas3D {
      *  initiates the scene and its objects
      */
     public void initScene() {
-        cube = new Cube(new Mat4Identity(), red.getRGB() );
+        viewPos = new Vec3D(2, 4, 3);
+
+        cam = new Camera()
+                .withPosition(viewPos)
+                .withAzimuth(getAzimuthToOrigin(viewPos))
+                .withZenith(getZenithToOrigin(viewPos));
+        projectionMatrix = new Mat4PerspRH(Math.PI/3, 1, 0.1,200);
+        orthMatrix = new Mat4OrthoRH(img.getWidth() / 40.0, img.getHeight() / 40.0, -200, 200);
+        
+        cube = new Cube(new Mat4Identity(), green.getRGB());
+        ArrayList<Object3D> objects = new ArrayList<>();
+        objects.add(cube);
+        scene = new Scene(objects);
     }
 
     // could be like my change method
+    public void change(Runnable change){
+        clear();
+        change.run();
+        drawScene();
+    }
+
     public void drawScene() {
         clear();
-
-//        wiredRenderer.render(cube);
+        renderer.render(img, scene, liner,
+                cam.getViewMatrix(),
+                projectionMatrix);
 
         panel.repaint();
+        img.present(panel.getGraphics());
+    }
+
+    private double getAzimuthToOrigin(final Vec3D observerPos){
+        final  Vec3D v = observerPos.opposite();
+        final double alpha = v.ignoreZ().normalized()
+                .map(vNorm -> Math.acos(vNorm.dot(new Vec2D(1,0))))
+                .orElse(0.0);
+        return (v.getY() > 0) ? alpha : Math.PI*2- alpha;
+    }
+
+    private double getZenithToOrigin(final Vec3D observerPos){
+        final  Vec3D v = observerPos.opposite();
+        final double alpha = v.normalized()
+                .map(vNorm-> Math.acos(vNorm.dot(new Vec3D(0,0,1))))
+                .orElse(Math.PI/2);
+        return Math.PI/2 - alpha;
     }
     /**
      * initiates variables for string objects, colors, anchor points
      */
     private void setupCanvas(){
         liner = new LinerDDAII();
-        wiredRenderer = new WiredRenderer(liner, img); //tODO change to my renderer
+        renderer = new Renderer3D();
 
         red = new Color(255, 0, 0);
         green= new Color(0, 155, 20);
@@ -116,11 +180,7 @@ public class Canvas3D {
     public void clear() {
         img.clear(grey.getRGB());
     }
-//    public void clear(int color) {
-//        img.setClearColor(color);
-//        img.clear();
-//
-//    }
+
 
     public void present(Graphics graphics) {
         img.present(graphics);

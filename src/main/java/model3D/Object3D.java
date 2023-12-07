@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Object3D {
-    private final List<Point3D> vertexBuffer;
-    private final List<Integer> indexBuffer;
-    private final Mat4 modelMat;
+    protected   List<Point3D> vertexBuffer;
+    protected final List<Integer> indexBuffer;
+    protected Mat4 modelMat;
     protected final int color;
 
     public Object3D(List<Point3D> vertexBuffer, List<Integer> indexBuffer, Mat4 modelMat, int color) {
@@ -40,5 +40,13 @@ public class Object3D {
         List<Line> lines = new ArrayList<>();
         //TODO
         return lines;
+    }
+
+    public void setModelMat(Mat4 modelMat) {
+        this.modelMat = modelMat;
+    }
+
+    public void setVertexBuffer(List<Point3D> vertexBuffer) {
+        this.vertexBuffer = vertexBuffer;
     }
 }

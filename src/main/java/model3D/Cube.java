@@ -24,7 +24,7 @@ public class Cube extends Object3D{
                 ,
                 Stream.iterate(0, i -> i +1)
                         .limit(4)
-                        .flatMap(i -> Stream.of(i, (i+1)%4, i +4, (i+5)%4, i, i+4))
+                        .flatMap(i -> Stream.of(i, (i+1)%4, i, i +4, i+4, (i+1)%4 +4))
                         .toList(),
                 modelMat, color);
     }
