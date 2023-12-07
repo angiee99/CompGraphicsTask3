@@ -36,8 +36,6 @@ public class Renderer3D {
             for (Point3D point: object.getVertexBuffer()) {
                 Point3D result = point.mul(T);
                 trasformedPoints.add(result);
-
-                System.out.println(result.getX() +" "+ result.getY() + " " +result.getZ() +" " +result.getW());
             }
             //   Lines l = from index buffer
 

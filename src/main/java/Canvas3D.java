@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
@@ -20,13 +22,15 @@ import java.util.ArrayList;
 public class Canvas3D {
     private JPanel panel;
     private RasterBI img;
-    private LinerDDAII liner; //TODO make a local variable in drawscene
+    private LinerDDAII liner; // make a local variable in drawscene
     private Renderer3D renderer;
 
     private Scene scene;
     private Object3D cube;
 
-    Vec3D viewPos;
+    private Vec3D viewPos;
+    private Vec2D anchorPoint;
+    private int x, y;
     private Camera cam;
     private Mat4PerspRH projectionMatrix;
     private Mat4OrthoRH orthMatrix;
@@ -39,10 +43,6 @@ public class Canvas3D {
         frame.setTitle("UHK FIM PGRF : " + this.getClass().getName());
         frame.setResizable(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        img = new RasterBI(width, height);
-        setupCanvas();
-
 
         panel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -61,24 +61,35 @@ public class Canvas3D {
         panel.requestFocus();
         panel.requestFocusInWindow();
 
+        img = new RasterBI(width, height);
+        setupCanvas();
         clear();
         initScene();
         drawScene();
 
+        panel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                x = e.getX();
+                y = e.getY();
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                cam = cam.addAzimuth( (double) ( x - e.getX() )/200)
+                         .addZenith( (double) ( y- e.getY())/200 );
+                x = e.getX();
+                y = e.getY();
+                drawScene();
+            }
+        });
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                super.keyPressed(e);
-
-                if(e.getKeyCode() == KeyEvent.VK_LEFT){
+                if(e.getKeyCode() == KeyEvent.VK_LEFT)
                     cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0.05, 0, 0)));
-                }
-
                 if(e.getKeyCode() == KeyEvent.VK_RIGHT)
-                {
                     cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(-0.05, 0, 0)));
-                }
-
                 if(e.getKeyCode() == KeyEvent.VK_UP)
                     cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0, 0.05)));
                 if(e.getKeyCode() == KeyEvent.VK_DOWN)
@@ -99,12 +110,25 @@ public class Canvas3D {
                 drawScene();
             }
         });
-
-
     }
-
     /**
-     *  initiates the scene and its objects
+     * initiates variables for helping objects, colors, anchor point
+     */
+    private void setupCanvas(){
+        liner = new LinerDDAII();
+        renderer = new Renderer3D();
+        anchorPoint = new Vec2D(2, 4);
+        x = img.getWidth()/2;
+        y = img.getHeight()/2;
+
+        red = new Color(255, 0, 0);
+        green= new Color(0, 155, 20);
+        grey = new Color(47, 47, 47);
+        yellow = new Color(255, 255, 0);
+        purple = new Color(235, 25, 230);
+    }
+    /**
+     *  initiates the scene, camera, projection and otrhogonal matrices, and 3D objects
      */
     public void initScene() {
         viewPos = new Vec3D(2, 4, 3);
@@ -153,19 +177,6 @@ public class Canvas3D {
                 .map(vNorm-> Math.acos(vNorm.dot(new Vec3D(0,0,1))))
                 .orElse(Math.PI/2);
         return Math.PI/2 - alpha;
-    }
-    /**
-     * initiates variables for string objects, colors, anchor points
-     */
-    private void setupCanvas(){
-        liner = new LinerDDAII();
-        renderer = new Renderer3D();
-
-        red = new Color(255, 0, 0);
-        green= new Color(0, 155, 20);
-        grey = new Color(47, 47, 47);
-        yellow = new Color(255, 255, 0);
-        purple = new Color(235, 25, 230);
     }
     /**
      * Clears the canvas and resets all the structures saved
