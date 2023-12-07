@@ -9,14 +9,9 @@ import transforms.Point3D;
 import transforms.Vec2D;
 import transforms.Vec3D;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-/* view matrix notes: up vector mame striktne dany, pak mame  azimut a zenit -> use class Camera
-* zenit - up/down
-* azimut - left/right
-*
-* */
+
 
 /* Kubika notes
  *  use class Cubic, 4 anchor points, use method compute where param is jak hladkou tu krivku chceme mit
@@ -31,9 +26,7 @@ public class Renderer3D {
         //projectMatrix could be either Orthogonal or Perspektivni
 
         //for each object 3d in scene
-        //   transformation martix T = Model * View * Projection
         final Mat4 vp = viewMatrix.mul(projectMatrix);
-//        final Mat4 vp = viewMatrix;
         for (Object3D object: scene.getObjects()) {
 
             Mat4 T =  object.getModelMat().mul(vp);
@@ -56,8 +49,6 @@ public class Renderer3D {
                 Point3D end   = trasformedPoints.get(indexB);
 
                 //   for each line
-                //          clipLine() -> stays in list if 2 points in view (if at least one point z < 0)
-
                 if( isClipped(start) || isClipped(end)){
                     continue;
                 }
@@ -81,11 +72,12 @@ public class Renderer3D {
     }
 
     private boolean isClipped(Point3D p){
-        // TODO make method for cutting and control this and -w <= x <= w
-        return (p.getZ() < 0);
+        return ( !isInRange(p));
     }
-    private boolean isInRange(double n, double start, double end){
-        return n >= start && n <= end;
+    private boolean isInRange(Point3D p){
+        return p.getX() >= -p.getW() && p.getX() <= p.getW()
+            && p.getY() >= -p.getW() && p.getY() <= p.getW()
+            && p.getZ() >= 0 && p.getZ() <= p.getW();
     }
     private Vec2D transformToViewport(Vec2D v) {
         return v.mul(new Vec2D(1, -1)) // here -1 for y because we change the smer of Oy
