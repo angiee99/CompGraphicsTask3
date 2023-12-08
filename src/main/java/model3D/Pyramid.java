@@ -15,7 +15,7 @@ public class Pyramid extends Object3D{
                 new Point3D(1, 1, -1),
                 new Point3D(-1, 1, -1),
                 new Point3D(0, 0, 1)),
-                List.of(0, 1, 1, 2, 2, 3, 3, 4, 4, 0, 0, 4, 1, 4, 2, 4, 3, 4),
+                List.of(0, 1, 1, 2, 2, 3, 3, 0, 3, 4, 0, 4, 1, 4, 2, 4),
                 modelMat, color);
     }
 }

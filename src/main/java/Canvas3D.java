@@ -23,7 +23,7 @@ public class Canvas3D {
     private Scene scene;
     private Object3D cube, pyramid;
     private Object3D Ox, Oy, Oz;
-
+    private int activeObj;
     private Vec3D viewPos;
     private Vec2D anchorPoint;
     private int x, y;
@@ -94,36 +94,37 @@ public class Canvas3D {
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+                Object3D current = scene.getObjects().get(activeObj);
                 if(e.getKeyCode() == KeyEvent.VK_LEFT)
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0.05, 0, 0)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4Transl(0.05, 0, 0)));
                 if(e.getKeyCode() == KeyEvent.VK_RIGHT)
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(-0.05, 0, 0)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4Transl(-0.05, 0, 0)));
                 if(e.getKeyCode() == KeyEvent.VK_UP)
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0, 0.05)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4Transl(0, 0, 0.05)));
                 if(e.getKeyCode() == KeyEvent.VK_DOWN)
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0, -0.05)));
-                if(e.getKeyCode() ==KeyEvent.VK_C)
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0.05, 0)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4Transl(0, 0, -0.05)));
+                if(e.getKeyCode() ==KeyEvent.VK_N)
+                    current.setModelMat(current.getModelMat().mul(new Mat4Transl(0, 0.05, 0)));
                 if(e.getKeyCode() ==KeyEvent.VK_F)
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, -0.05, 0)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4Transl(0, -0.05, 0)));
 
                 // rotations
                 if(e.getKeyCode() == KeyEvent.VK_X ){
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4RotX(0.1)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4RotX(0.1)));
                 }
                 if(e.getKeyCode() == KeyEvent.VK_Y ){
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4RotY(0.1)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4RotY(0.1)));
                 }
                 if(e.getKeyCode() == KeyEvent.VK_Z ){
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4RotZ(0.1)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4RotZ(0.1)));
                 }
 
                 // scale
                 if(e.getKeyCode() == KeyEvent.VK_EQUALS ){
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4Scale(1.2)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4Scale(1.2)));
                 }
                 if(e.getKeyCode() == KeyEvent.VK_MINUS ){
-                    cube.setModelMat(cube.getModelMat().mul(new Mat4Scale(0.8)));
+                    current.setModelMat(current.getModelMat().mul(new Mat4Scale(0.8)));
                 }
 
                 // camera control
@@ -146,6 +147,16 @@ public class Canvas3D {
                 }
                 if(e.getKeyCode() == KeyEvent.VK_P){
                     chosenProjection = perspectiveMatrix;
+                }
+
+                // changing the active object3D
+                if(e.getKeyCode() == KeyEvent.VK_C){
+                    if(activeObj == 3) activeObj = 4;
+                    else activeObj = 3;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_C && e.isShiftDown()){
+//                    current.setColor(grey.getRGB()); - make invisible
+                    // or else make visible
                 }
 
                 drawScene();
@@ -183,7 +194,7 @@ public class Canvas3D {
                 .withZenith(getZenithToOrigin(viewPos));
 
         perspectiveMatrix = new Mat4PerspRH(Math.PI/3, 1, 0.1,200);
-        orthMatrix = new Mat4OrthoRH(img.getWidth() / 40.0, img.getHeight() / 40.0, -200, 200);
+        orthMatrix = new Mat4OrthoRH(img.getWidth() / 40.0, img.getHeight() / 40.0, -200, 200); // mb change
         chosenProjection = perspectiveMatrix;
 
         cube = new Cube(new Mat4Identity(), greenish.getRGB());
@@ -192,12 +203,14 @@ public class Canvas3D {
         Oy = new Axis(new Point3D(0, 2, 0), green.getRGB());
         Oz = new Axis(new Point3D(0, 0, 2), blue.getRGB());
 
+
         ArrayList<Object3D> objects = new ArrayList<>();
         objects.add(Ox);
         objects.add(Oy);
         objects.add(Oz);
         objects.add(cube);
         objects.add(pyramid);
+        activeObj = 3;
 
         scene = new Scene(objects);
     }
