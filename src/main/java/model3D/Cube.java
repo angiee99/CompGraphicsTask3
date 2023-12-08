@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 public class Cube extends Object3D{
 
-    public Cube( Mat4 modelMat, int color) {
+    public Cube(Mat4 modelMat, int color) {
         super(
                 List.of(
                         new Point3D(-1, -1, -1),

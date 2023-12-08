@@ -1,7 +1,4 @@
-import model3D.Axis;
-import model3D.Cube;
-import model3D.Object3D;
-import model3D.Scene;
+import model3D.*;
 import rasterization.RasterBI;
 import rasterops.rasterize.LinerDDAII;
 import renderer.Renderer3D;
@@ -24,7 +21,7 @@ public class Canvas3D {
     private Renderer3D renderer;
 
     private Scene scene;
-    private Object3D cube;
+    private Object3D cube, pyramid;
     private Object3D Ox, Oy, Oz;
 
     private Vec3D viewPos;
@@ -180,6 +177,7 @@ public class Canvas3D {
         orthMatrix = new Mat4OrthoRH(img.getWidth() / 40.0, img.getHeight() / 40.0, -200, 200);
         
         cube = new Cube(new Mat4Identity(), greenish.getRGB());
+        pyramid = new Pyramid(new Mat4Identity(), purple.getRGB());
         Ox = new Axis(new Point3D(2, 0, 0), red.getRGB());
         Oy = new Axis(new Point3D(0, 2, 0), green.getRGB());
         Oz = new Axis(new Point3D(0, 0, 2), blue.getRGB());
@@ -189,6 +187,7 @@ public class Canvas3D {
         objects.add(Oy);
         objects.add(Oz);
         objects.add(cube);
+        objects.add(pyramid);
 
         scene = new Scene(objects);
     }
