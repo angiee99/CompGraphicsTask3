@@ -1,3 +1,4 @@
+import model3D.Axis;
 import model3D.Cube;
 import model3D.Object3D;
 import model3D.Scene;
@@ -24,6 +25,7 @@ public class Canvas3D {
 
     private Scene scene;
     private Object3D cube;
+    private Object3D Ox, Oy, Oz;
 
     private Vec3D viewPos;
     private Vec2D anchorPoint;
@@ -31,7 +33,7 @@ public class Canvas3D {
     private Camera cam;
     private Mat4PerspRH projectionMatrix;
     private Mat4OrthoRH orthMatrix;
-    private Color red, green, grey, yellow, purple;
+    private Color red, green, blue, greenish, grey, yellow, purple;
 
 
     public Canvas3D(int width, int height) {
@@ -118,6 +120,15 @@ public class Canvas3D {
                     cube.setModelMat(cube.getModelMat().mul(new Mat4RotZ(0.1)));
                 }
 
+                // scale
+                if(e.getKeyCode() == KeyEvent.VK_EQUALS ){
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4Scale(1.2)));
+                }
+                if(e.getKeyCode() == KeyEvent.VK_MINUS ){
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4Scale(0.8)));
+                }
+
+                // camera control
                 if(e.getKeyCode() == KeyEvent.VK_A){
                     cam = cam.right(0.1);
                 }
@@ -147,7 +158,10 @@ public class Canvas3D {
         y = img.getHeight()/2;
 
         red = new Color(255, 0, 0);
-        green= new Color(0, 155, 20);
+        green = new Color(0, 255, 0);
+        blue = new Color(0, 0, 255);
+
+        greenish = new Color(0, 155, 20);
         grey = new Color(47, 47, 47);
         yellow = new Color(255, 255, 0);
         purple = new Color(235, 25, 230);
@@ -165,9 +179,17 @@ public class Canvas3D {
         projectionMatrix = new Mat4PerspRH(Math.PI/3, 1, 0.1,200);
         orthMatrix = new Mat4OrthoRH(img.getWidth() / 40.0, img.getHeight() / 40.0, -200, 200);
         
-        cube = new Cube(new Mat4Identity(), green.getRGB());
+        cube = new Cube(new Mat4Identity(), greenish.getRGB());
+        Ox = new Axis(new Point3D(2, 0, 0), red.getRGB());
+        Oy = new Axis(new Point3D(0, 2, 0), green.getRGB());
+        Oz = new Axis(new Point3D(0, 0, 2), blue.getRGB());
+
         ArrayList<Object3D> objects = new ArrayList<>();
+        objects.add(Ox);
+        objects.add(Oy);
+        objects.add(Oz);
         objects.add(cube);
+
         scene = new Scene(objects);
     }
 

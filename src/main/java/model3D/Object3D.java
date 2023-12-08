@@ -1,10 +1,8 @@
 package model3D;
 
-import model.Line;
 import transforms.Mat4;
 import transforms.Point3D;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Object3D {
