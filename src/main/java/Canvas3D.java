@@ -28,7 +28,8 @@ public class Canvas3D {
     private Vec2D anchorPoint;
     private int x, y;
     private Camera cam;
-    private Mat4PerspRH projectionMatrix;
+    private Mat4 chosenProjection;
+    private Mat4PerspRH perspectiveMatrix;
     private Mat4OrthoRH orthMatrix;
     private Color red, green, blue, greenish, grey, yellow, purple;
 
@@ -139,6 +140,13 @@ public class Canvas3D {
                     cam = cam.backward(0.1);
                 }
 
+                //changing projection mode
+                if(e.getKeyCode() == KeyEvent.VK_O){
+                    chosenProjection = orthMatrix;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_P){
+                    chosenProjection = perspectiveMatrix;
+                }
 
                 drawScene();
             }
@@ -173,9 +181,11 @@ public class Canvas3D {
                 .withPosition(viewPos)
                 .withAzimuth(getAzimuthToOrigin(viewPos))
                 .withZenith(getZenithToOrigin(viewPos));
-        projectionMatrix = new Mat4PerspRH(Math.PI/3, 1, 0.1,200);
+
+        perspectiveMatrix = new Mat4PerspRH(Math.PI/3, 1, 0.1,200);
         orthMatrix = new Mat4OrthoRH(img.getWidth() / 40.0, img.getHeight() / 40.0, -200, 200);
-        
+        chosenProjection = perspectiveMatrix;
+
         cube = new Cube(new Mat4Identity(), greenish.getRGB());
         pyramid = new Pyramid(new Mat4Identity(), purple.getRGB());
         Ox = new Axis(new Point3D(2, 0, 0), red.getRGB());
@@ -203,7 +213,7 @@ public class Canvas3D {
         clear();
         renderer.render(img, scene, liner,
                 cam.getViewMatrix(),
-                projectionMatrix);
+                chosenProjection);
 
         panel.repaint();
         img.present(panel.getGraphics());
