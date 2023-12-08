@@ -8,10 +8,7 @@ import transforms.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 /**
@@ -66,14 +63,14 @@ public class Canvas3D {
         clear();
         initScene();
         drawScene();
-
-        panel.addMouseMotionListener(new MouseAdapter() {
+        panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 x = e.getX();
                 y = e.getY();
             }
-
+        });
+        panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 cam = cam.addAzimuth( (double) ( x - e.getX() )/200)
@@ -81,6 +78,17 @@ public class Canvas3D {
                 x = e.getX();
                 y = e.getY();
                 drawScene();
+            }
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                //TODO test
+                if(e.getWheelRotation() < 0) {// moved up
+                    cam = cam.forward(0.1);
+                }
+                else {
+                    cam = cam.backward(0.1);
+                }
             }
         });
         panel.addKeyListener(new KeyAdapter() {
@@ -94,6 +102,21 @@ public class Canvas3D {
                     cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0, 0.05)));
                 if(e.getKeyCode() == KeyEvent.VK_DOWN)
                     cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0, -0.05)));
+                if(e.getKeyCode() ==KeyEvent.VK_C)
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, 0.05, 0)));
+                if(e.getKeyCode() ==KeyEvent.VK_F)
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4Transl(0, -0.05, 0)));
+
+                // rotations
+                if(e.getKeyCode() == KeyEvent.VK_X ){
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4RotX(0.1)));
+                }
+                if(e.getKeyCode() == KeyEvent.VK_Y ){
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4RotY(0.1)));
+                }
+                if(e.getKeyCode() == KeyEvent.VK_Z ){
+                    cube.setModelMat(cube.getModelMat().mul(new Mat4RotZ(0.1)));
+                }
 
                 if(e.getKeyCode() == KeyEvent.VK_A){
                     cam = cam.right(0.1);
@@ -107,6 +130,8 @@ public class Canvas3D {
                 if(e.getKeyCode() == KeyEvent.VK_S){
                     cam = cam.backward(0.1);
                 }
+
+
                 drawScene();
             }
         });

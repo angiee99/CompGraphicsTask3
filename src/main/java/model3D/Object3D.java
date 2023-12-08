@@ -36,12 +36,6 @@ public class Object3D {
         return color;
     }
 
-    public List<Line> getLines() {
-        List<Line> lines = new ArrayList<>();
-        //TODO
-        return lines;
-    }
-
     public void setModelMat(Mat4 modelMat) {
         this.modelMat = modelMat;
     }
