@@ -79,17 +79,15 @@ public class Canvas3D {
                 y = e.getY();
                 drawScene();
             }
-
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                //TODO test
-                if(e.getWheelRotation() < 0) {// moved up
-                    cam = cam.forward(0.1);
-                }
-                else {
-                    cam = cam.backward(0.1);
-                }
+        });
+        panel.addMouseWheelListener(e -> {
+            if(e.getWheelRotation() < 0) {// moved up
+                cam = cam.backward(0.1);
             }
+            else {
+                cam = cam.forward(0.1);
+            }
+            drawScene();
         });
         panel.addKeyListener(new KeyAdapter() {
             @Override
