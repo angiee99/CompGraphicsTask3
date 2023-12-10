@@ -21,7 +21,7 @@ public class Canvas3D {
     private Renderer3D renderer;
 
     private Scene scene;
-    private Object3D cube, pyramid;
+    private Object3D cube, pyramid, prism;
     private Object3D Ox, Oy, Oz;
     private int activeObj;
     private Vec3D viewPos;
@@ -197,6 +197,7 @@ public class Canvas3D {
 
         cube = new Cube(new Mat4Identity(), greenish.getRGB());
         pyramid = new Pyramid(new Mat4Identity(), purple.getRGB());
+        prism = new TriangularPrism(new Mat4Transl(-2.5, 1, 0), yellow.getRGB());
         Ox = new Axis(new Point3D(2, 0, 0), red.getRGB());
         Oy = new Axis(new Point3D(0, 2, 0), green.getRGB());
         Oz = new Axis(new Point3D(0, 0, 2), blue.getRGB());
@@ -208,6 +209,7 @@ public class Canvas3D {
         objects.add(Oz);
         objects.add(cube);
         objects.add(pyramid);
+        objects.add(prism);
         activeObj = 3;
 
         scene = new Scene(objects);
