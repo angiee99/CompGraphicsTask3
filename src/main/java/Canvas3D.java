@@ -31,6 +31,8 @@ public class Canvas3D {
     private Mat4 chosenProjection;
     private Mat4PerspRH perspectiveMatrix;
     private Mat4OrthoRH orthMatrix;
+
+    private Cubic3D ferguson, bezier, coons;
     private Color red, green, blue, greenish, grey, yellow, purple;
 
 
@@ -202,7 +204,6 @@ public class Canvas3D {
         Oy = new Axis(new Point3D(0, 2, 0), green.getRGB());
         Oz = new Axis(new Point3D(0, 0, 2), blue.getRGB());
 
-
         ArrayList<Object3D> objects = new ArrayList<>();
         objects.add(Ox);
         objects.add(Oy);
@@ -211,6 +212,33 @@ public class Canvas3D {
         objects.add(pyramid);
         objects.add(prism);
         activeObj = 3;
+
+        ferguson = new Cubic3D(20, Cubic.FERGUSON,
+                cube.getVertexBuffer().get(6),
+                cube.getVertexBuffer().get(2),
+                cube.getVertexBuffer().get(6),
+                cube.getVertexBuffer().get(2),
+                new Mat4Identity(),
+                yellow.getRGB()
+                );
+        bezier = new Cubic3D(20, Cubic.BEZIER,
+                cube.getVertexBuffer().get(0),
+                cube.getVertexBuffer().get(5),
+                cube.getVertexBuffer().get(6),
+                cube.getVertexBuffer().get(2),
+                new Mat4Identity(),
+                blue.getRGB()
+        );
+        coons = new Cubic3D(20, Cubic.COONS,
+                new Point3D(-1,-6,1),new Point3D(-0.5,-4,0),
+                new Point3D(1,-4,1),new Point3D(2,-6,2),
+                new Mat4Identity(),
+                red.getRGB()
+        );
+
+        objects.add(ferguson);
+        objects.add(bezier);
+        objects.add(coons);
 
         scene = new Scene(objects);
     }
@@ -228,9 +256,11 @@ public class Canvas3D {
                 cam.getViewMatrix(),
                 chosenProjection);
 
+
         panel.repaint();
         img.present(panel.getGraphics());
     }
+
 
     private double getAzimuthToOrigin(final Vec3D observerPos){
         final  Vec3D v = observerPos.opposite();

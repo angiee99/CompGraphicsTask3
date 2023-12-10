@@ -6,8 +6,8 @@ import transforms.Point3D;
 import java.util.List;
 
 public class Object3D {
-    protected   List<Point3D> vertexBuffer;
-    protected final List<Integer> indexBuffer;
+    protected  List<Point3D> vertexBuffer;
+    protected List<Integer> indexBuffer;
     protected Mat4 modelMat;
     protected final int color;
 
@@ -40,5 +40,9 @@ public class Object3D {
 
     public void setVertexBuffer(List<Point3D> vertexBuffer) {
         this.vertexBuffer = vertexBuffer;
+    }
+
+    public void setIndexBuffer(List<Integer> indexBuffer) {
+        this.indexBuffer = indexBuffer;
     }
 }
