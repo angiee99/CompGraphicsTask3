@@ -10,8 +10,8 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 /**
- * @author PGRF FIM UHK
- * @version 2023.b
+ * @author Anhelina Kulkova
+ * @version 2023
  */
 
 public class Canvas3D {
@@ -211,6 +211,16 @@ public class Canvas3D {
                 }
                 if(e.getKeyCode() == KeyEvent.VK_T){
                     cosin.changeVisibility();
+                }
+
+                if(e.getKeyCode() == KeyEvent.VK_E){
+                    long start = System.currentTimeMillis();
+                    Mat4 modelBefore = current.getModelMat();
+                    while(System.currentTimeMillis() - start < 2_000){
+                        current.setModelMat(current.getModelMat().mul(new Mat4RotXYZ(0.01, 0.01, 0.01)));
+                        drawScene();
+                    }
+                    current.setModelMat(modelBefore);
                 }
 
                 drawScene();
