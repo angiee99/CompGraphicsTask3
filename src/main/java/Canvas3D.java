@@ -17,7 +17,6 @@ import java.util.ArrayList;
 public class Canvas3D {
     private JPanel panel;
     private RasterBI img;
-    private LinerDDAII liner; // make a local variable in drawscene
     private Renderer3D renderer;
 
     private Scene scene;
@@ -66,6 +65,7 @@ public class Canvas3D {
         clear();
         initScene();
         drawScene();
+
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -96,6 +96,7 @@ public class Canvas3D {
             @Override
             public void keyPressed(KeyEvent e) {
                 Object3D current = scene.getObjects().get(activeObj);
+                //translations
                 if(e.getKeyCode() == KeyEvent.VK_LEFT)
                     current.setModelMat(current.getModelMat().mul(new Mat4Transl(0.05, 0, 0)));
                 if(e.getKeyCode() == KeyEvent.VK_RIGHT)
@@ -130,10 +131,10 @@ public class Canvas3D {
 
                 // camera control
                 if(e.getKeyCode() == KeyEvent.VK_A){
-                    cam = cam.right(0.1);
+                    cam = cam.left(0.1);
                 }
                 if(e.getKeyCode() == KeyEvent.VK_D){
-                    cam = cam.left(0.1);
+                    cam = cam.right(0.1);
                 }
                 if(e.getKeyCode() == KeyEvent.VK_W){
                     cam = cam.forward(0.1);
@@ -221,7 +222,6 @@ public class Canvas3D {
      * initiates variables for helping objects, colors, anchor point
      */
     private void setupCanvas(){
-        liner = new LinerDDAII();
         renderer = new Renderer3D();
         anchorPoint = new Vec2D(2, 4);
         x = img.getWidth()/2;
@@ -331,16 +331,9 @@ public class Canvas3D {
         return list;
     }
 
-    // could be like my change method
-    public void change(Runnable change){
-        clear();
-        change.run();
-        drawScene();
-    }
-
     public void drawScene() {
         clear();
-        renderer.render(img, scene, liner,
+        renderer.render(img, scene, new LinerDDAII(),
                 cam.getViewMatrix(),
                 chosenProjection);
 
