@@ -33,8 +33,9 @@ public class Canvas3D {
     private Mat4OrthoRH orthMatrix;
 
     private Cubic3D ferguson, bezier, coons;
-    private Color red, green, blue, greenish, grey, yellow, purple;
-
+    private Bicubic3D bezierBicubic;
+    private Cosin cosin;
+    private Color red, green, blue, greenish, grey, yellow, purple, azure;
 
     public Canvas3D(int width, int height) {
         JFrame frame = new JFrame();
@@ -212,6 +213,7 @@ public class Canvas3D {
         grey = new Color(47, 47, 47);
         yellow = new Color(255, 255, 0);
         purple = new Color(235, 25, 230);
+        azure = new Color(0, 200, 215);
     }
     /**
      *  initiates the scene, camera, projection and otrhogonal matrices, and 3D objects
@@ -258,7 +260,7 @@ public class Canvas3D {
                 cube.getVertexBuffer().get(6),
                 cube.getVertexBuffer().get(2),
                 new Mat4Identity(),
-                blue.getRGB()
+                azure.getRGB()
         );
         coons = new Cubic3D(20, Cubic.COONS,
                 new Point3D(-1,-6,1),
@@ -269,10 +271,26 @@ public class Canvas3D {
                 red.getRGB()
         );
 
+        Point3D[] list = new Point3D[16];
+        list[0] = cube.getVertexBuffer().get(0); list[1] = cube.getVertexBuffer().get(3);
+        list[2] = cube.getVertexBuffer().get(1); list[3] = cube.getVertexBuffer().get(4);
+        list[4] = pyramid.getVertexBuffer().get(0); list[5] = pyramid.getVertexBuffer().get(3);
+        list[6] = new Point3D(1, 2, 0); list[7] = new Point3D(-1, -2, 0);
+        list[8] =  new Point3D(-0.5, -1, 1); list[9] = new Point3D(-0.5, -0.5, 1);
+        list[10] = new Point3D(0.5, -1, 1); list[11] = new Point3D(2, 3, -1);
+        list[12] = new Point3D(2, 2, 1); list[13] = new Point3D(2, -2, -1);
+        list[14] = cube.getVertexBuffer().get(5); list[15] = cube.getVertexBuffer().get(6);
+
+        bezierBicubic = new Bicubic3D(20, 20, Cubic.BEZIER,
+                list, new Mat4Identity(), purple.getRGB());
+
         objects.add(ferguson);
         objects.add(bezier);
         objects.add(coons);
+//        objects.add(bezierBicubic);
 
+        cosin = new Cosin(1, 2, 200, new Mat4Identity(), azure.getRGB());
+        objects.add(cosin);
         scene = new Scene(objects);
     }
 
