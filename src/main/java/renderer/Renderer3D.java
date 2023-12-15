@@ -12,23 +12,18 @@ import transforms.Vec3D;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/* Kubika notes
- *  use class Cubic, 4 anchor points, use method compute where param is jak hladkou tu krivku chceme mit
- *  (try params 0, 0.2, 0.8)
- */
 public class Renderer3D {
     public void render(final Raster raster,
                        final Scene scene,
                        final Liner liner,
                        final Mat4 viewMatrix,
                        final Mat4 projectMatrix){
-        //projectMatrix could be either Orthogonal or Perspektivni
-
         //for each object 3d in scene
         final Mat4 vp = viewMatrix.mul(projectMatrix);
         for (Object3D object: scene.getObjects()) {
-
+            if(object.isHidden()){
+                continue;
+            }
             Mat4 T =  object.getModelMat().mul(vp);
 
             List<Point3D> trasformedPoints = new ArrayList<>();
@@ -86,18 +81,6 @@ public class Renderer3D {
         return v.mul(new Vec2D(1, -1)) // here -1 for y because we change the smer of Oy
                 .add(new Vec2D(1, 1))
                 .mul(new Vec2D((800 - 1) / 2., (600 - 1) / 2.)); //
-        // /2. because we move <-1;1> -> <0; 2> and then this 2 is not needed
-    }
-
-    /**
-     * Transfromation to viewport in 3D
-     * @param v Vec3D
-     * @return transformed vector
-     */
-    private Vec3D transformToWindow(Vec3D v) {
-        return v.mul(new Vec3D(1, -1, 1)) // here -1 for y because we change the smer of Oy
-                .add(new Vec3D(1, 1, 0))
-                .mul(new Vec3D((800 - 1) / 2., (600 - 1) / 2., 1)); //
         // /2. because we move <-1;1> -> <0; 2> and then this 2 is not needed
     }
 

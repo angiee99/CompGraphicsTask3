@@ -157,39 +157,61 @@ public class Canvas3D {
                         activeObj = 3;
                     }
                 }
-                if(e.getKeyCode() == KeyEvent.VK_C && e.isShiftDown()){
-//                    current.setColor(grey.getRGB()); - make invisible
-                    // or else make visible
-                }
 
                 // parametrizing the smoothness of cubic
                 if(e.getKeyCode() == KeyEvent.VK_F && e.isAltDown()){
                     ferguson.setSmooth(ferguson.getSmooth() /2);
                     ferguson.computeVertices();
                 }
-                if(e.getKeyCode() == KeyEvent.VK_F){
+                else if(e.getKeyCode() == KeyEvent.VK_F && e.isShiftDown()){
                     ferguson.setSmooth(ferguson.getSmooth() *2);
                     ferguson.computeVertices();
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_F ){
+                    ferguson.changeVisibility();
                 }
 
                 if(e.getKeyCode() == KeyEvent.VK_B && e.isAltDown()){
                     bezier.setSmooth(bezier.getSmooth() /2);
                     bezier.computeVertices();
                 }
-                if(e.getKeyCode() == KeyEvent.VK_B){
+                else if(e.getKeyCode() == KeyEvent.VK_B && e.isShiftDown()){
                     bezier.setSmooth(bezier.getSmooth() *2);
                     bezier.computeVertices();
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_B ){
+                    bezier.changeVisibility();
                 }
 
                 if(e.getKeyCode() == KeyEvent.VK_N && e.isAltDown()){
                     coons.setSmooth(coons.getSmooth() /2);
                     coons.computeVertices();
                 }
-                if(e.getKeyCode() == KeyEvent.VK_N){
+                else if(e.getKeyCode() == KeyEvent.VK_N && e.isShiftDown()){
                     coons.setSmooth(coons.getSmooth() *2);
                     coons.computeVertices();
                 }
+                else if(e.getKeyCode() == KeyEvent.VK_N ){
+                    coons.changeVisibility();
+                }
 
+                // hiding/showing objects
+                if(e.getKeyCode() == KeyEvent.VK_C ){
+                    cube.changeVisibility();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_G ){
+                    pyramid.changeVisibility();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_R ){
+                    prism.changeVisibility();
+                }
+
+                if(e.getKeyCode() == KeyEvent.VK_H){
+                    fergusonBicubic.changeVisibility();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_T){
+                    cosin.changeVisibility();
+                }
 
                 drawScene();
             }
@@ -231,7 +253,7 @@ public class Canvas3D {
         chosenProjection = perspectiveMatrix;
 
         cube = new Cube(new Mat4Identity(), greenish.getRGB());
-        pyramid = new Pyramid(new Mat4Identity(), purple.getRGB());
+        pyramid = new Pyramid(new Mat4Transl(0, 0, 0.5), purple.getRGB());
         prism = new TriangularPrism(new Mat4Transl(-2.5, 1, 0), yellow.getRGB());
         Ox = new Axis(new Point3D(2, 0, 0), red.getRGB());
         Oy = new Axis(new Point3D(0, 2, 0), green.getRGB());
@@ -270,7 +292,6 @@ public class Canvas3D {
                 new Mat4Identity(),
                 red.getRGB()
         );
-
 
         fergusonBicubic = new Bicubic3D(50, 50, Cubic.FERGUSON,
                 getBicubicPoints(), new Mat4Transl(1, 0, 1), azure.getRGB());
