@@ -33,7 +33,7 @@ public class Canvas3D {
     private Mat4OrthoRH orthMatrix;
 
     private Cubic3D ferguson, bezier, coons;
-    private Bicubic3D bezierBicubic;
+    private Bicubic3D fergusonBicubic;
     private Cosin cosin;
     private Color red, green, blue, greenish, grey, yellow, purple, azure;
 
@@ -271,27 +271,43 @@ public class Canvas3D {
                 red.getRGB()
         );
 
-        Point3D[] list = new Point3D[16];
-        list[0] = cube.getVertexBuffer().get(0); list[1] = cube.getVertexBuffer().get(3);
-        list[2] = cube.getVertexBuffer().get(1); list[3] = cube.getVertexBuffer().get(4);
-        list[4] = pyramid.getVertexBuffer().get(0); list[5] = pyramid.getVertexBuffer().get(3);
-        list[6] = new Point3D(1, 2, 0); list[7] = new Point3D(-1, -2, 0);
-        list[8] =  new Point3D(-0.5, -1, 1); list[9] = new Point3D(-0.5, -0.5, 1);
-        list[10] = new Point3D(0.5, -1, 1); list[11] = new Point3D(2, 3, -1);
-        list[12] = new Point3D(2, 2, 1); list[13] = new Point3D(2, -2, -1);
-        list[14] = cube.getVertexBuffer().get(5); list[15] = cube.getVertexBuffer().get(6);
 
-        bezierBicubic = new Bicubic3D(20, 20, Cubic.BEZIER,
-                list, new Mat4Identity(), purple.getRGB());
+        fergusonBicubic = new Bicubic3D(50, 50, Cubic.FERGUSON,
+                getBicubicPoints(), new Mat4Transl(1, 0, 1), azure.getRGB());
 
         objects.add(ferguson);
         objects.add(bezier);
         objects.add(coons);
-//        objects.add(bezierBicubic);
+        objects.add(fergusonBicubic);
 
         cosin = new Cosin(1, 2, 200, new Mat4Identity(), azure.getRGB());
         objects.add(cosin);
         scene = new Scene(objects);
+    }
+    private Point3D[] getBicubicPoints(){
+        Point3D[] list = new Point3D[16];
+        list[0] = cube.getVertexBuffer().get(6);
+        list[1] =  cube.getVertexBuffer().get(2);
+        list[2] =  cube.getVertexBuffer().get(6);
+        list[3] =  cube.getVertexBuffer().get(2);
+
+        list[4] = cube.getVertexBuffer().get(6).mul(new Mat4Transl(0, 1, 0));
+        list[5] =  cube.getVertexBuffer().get(2).mul(new Mat4Transl(0, 1, 0));
+        list[6] =  cube.getVertexBuffer().get(6).mul(new Mat4Transl(0, 1, 0));
+        list[7] =  cube.getVertexBuffer().get(2).mul(new Mat4Transl(0, 1, 0));
+
+        list[8] = cube.getVertexBuffer().get(6).mul(new Mat4Transl(0, 1, 2));
+        list[9] =  cube.getVertexBuffer().get(2).mul(new Mat4Transl(0, 1, 2));
+        list[10] =  cube.getVertexBuffer().get(6).mul(new Mat4Transl(0, 1, 2));
+        list[11] =  cube.getVertexBuffer().get(2).mul(new Mat4Transl(0, 1, 2));
+
+
+        list[12] = cube.getVertexBuffer().get(6).mul(new Mat4Transl(1, 1, 0));
+        list[13] =  cube.getVertexBuffer().get(2).mul(new Mat4Transl(1, 1, 0));
+        list[14] =  cube.getVertexBuffer().get(6).mul(new Mat4Transl(1, 1, 0));
+        list[15] =  cube.getVertexBuffer().get(2).mul(new Mat4Transl(1, 1, 0));
+
+        return list;
     }
 
     // could be like my change method
