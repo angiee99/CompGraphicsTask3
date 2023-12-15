@@ -24,7 +24,6 @@ public class Canvas3D {
     private Object3D Ox, Oy, Oz;
     private int activeObj;
     private Vec3D viewPos;
-    private Vec2D anchorPoint;
     private int x, y;
     private Camera cam;
     private Mat4 chosenProjection;
@@ -223,7 +222,6 @@ public class Canvas3D {
      */
     private void setupCanvas(){
         renderer = new Renderer3D();
-        anchorPoint = new Vec2D(2, 4);
         x = img.getWidth()/2;
         y = img.getHeight()/2;
 
@@ -238,7 +236,7 @@ public class Canvas3D {
         azure = new Color(0, 200, 215);
     }
     /**
-     *  initiates the scene, camera, projection and otrhogonal matrices, and 3D objects
+     *  initiates the scene, camera, projection and orthogonal matrices, and 3D objects
      */
     public void initScene() {
         viewPos = new Vec3D(2, 4, 3);
@@ -305,6 +303,9 @@ public class Canvas3D {
         objects.add(cosin);
         scene = new Scene(objects);
     }
+    /**
+     * helping method that returns 16 points for Bicubic
+     */
     private Point3D[] getBicubicPoints(){
         Point3D[] list = new Point3D[16];
         list[0] = cube.getVertexBuffer().get(6);
@@ -331,6 +332,9 @@ public class Canvas3D {
         return list;
     }
 
+    /**
+     * draws the scene by clearing it, rendering and presenting
+     */
     public void drawScene() {
         clear();
         renderer.render(img, scene, new LinerDDAII(),
@@ -342,7 +346,11 @@ public class Canvas3D {
         img.present(panel.getGraphics());
     }
 
-
+    /**
+     * calculates the azimuth to origin based on given vector
+     * @param observerPos Vec3D that represents the observer's position
+     * @return azimuth as angle in radians
+     */
     private double getAzimuthToOrigin(final Vec3D observerPos){
         final  Vec3D v = observerPos.opposite();
         final double alpha = v.ignoreZ().normalized()
@@ -351,6 +359,11 @@ public class Canvas3D {
         return (v.getY() > 0) ? alpha : Math.PI*2- alpha;
     }
 
+    /**
+     * calculates the zenith to origin based on given vector
+     * @param observerPos Vec3D that represents the observer's position
+     * @return zenith as angle in radians
+     */
     private double getZenithToOrigin(final Vec3D observerPos){
         final  Vec3D v = observerPos.opposite();
         final double alpha = v.normalized()
@@ -358,20 +371,13 @@ public class Canvas3D {
                 .orElse(Math.PI/2);
         return Math.PI/2 - alpha;
     }
-    /**
-     * Clears the canvas and resets all the structures saved
-     */
-    public void clearCanvas() {
-        clear();
-        img.present(panel.getGraphics());
-    }
+
     /**
      * Paints the canvas in its background color
      */
     public void clear() {
         img.clear(grey.getRGB());
     }
-
 
     public void present(Graphics graphics) {
         img.present(graphics);
