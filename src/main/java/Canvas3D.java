@@ -103,9 +103,9 @@ public class Canvas3D {
                     current.setModelMat(current.getModelMat().mul(new Mat4Transl(0, 0, 0.05)));
                 if(e.getKeyCode() == KeyEvent.VK_DOWN)
                     current.setModelMat(current.getModelMat().mul(new Mat4Transl(0, 0, -0.05)));
-                if(e.getKeyCode() ==KeyEvent.VK_N)
+                if(e.getKeyCode() ==KeyEvent.VK_M)
                     current.setModelMat(current.getModelMat().mul(new Mat4Transl(0, 0.05, 0)));
-                if(e.getKeyCode() ==KeyEvent.VK_F)
+                if(e.getKeyCode() ==KeyEvent.VK_L)
                     current.setModelMat(current.getModelMat().mul(new Mat4Transl(0, -0.05, 0)));
 
                 // rotations
@@ -150,14 +150,45 @@ public class Canvas3D {
                 }
 
                 // changing the active object3D
-                if(e.getKeyCode() == KeyEvent.VK_C){
-                    if(activeObj == 3) activeObj = 4;
-                    else activeObj = 3;
+                if(e.getKeyCode() == KeyEvent.VK_PERIOD){
+                    activeObj = (activeObj +1) % scene.getObjects().size();
+                    if(activeObj <= 2 && activeObj >=0){
+                        activeObj = 3;
+                    }
                 }
                 if(e.getKeyCode() == KeyEvent.VK_C && e.isShiftDown()){
 //                    current.setColor(grey.getRGB()); - make invisible
                     // or else make visible
                 }
+
+                // parametrizing the smoothness of cubic
+                if(e.getKeyCode() == KeyEvent.VK_F && e.isAltDown()){
+                    ferguson.setSmooth(ferguson.getSmooth() /2);
+                    ferguson.computeVertices();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_F){
+                    ferguson.setSmooth(ferguson.getSmooth() *2);
+                    ferguson.computeVertices();
+                }
+
+                if(e.getKeyCode() == KeyEvent.VK_B && e.isAltDown()){
+                    bezier.setSmooth(bezier.getSmooth() /2);
+                    bezier.computeVertices();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_B){
+                    bezier.setSmooth(bezier.getSmooth() *2);
+                    bezier.computeVertices();
+                }
+
+                if(e.getKeyCode() == KeyEvent.VK_N && e.isAltDown()){
+                    coons.setSmooth(coons.getSmooth() /2);
+                    coons.computeVertices();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_N){
+                    coons.setSmooth(coons.getSmooth() *2);
+                    coons.computeVertices();
+                }
+
 
                 drawScene();
             }
@@ -230,8 +261,10 @@ public class Canvas3D {
                 blue.getRGB()
         );
         coons = new Cubic3D(20, Cubic.COONS,
-                new Point3D(-1,-6,1),new Point3D(-0.5,-4,0),
-                new Point3D(1,-4,1),new Point3D(2,-6,2),
+                new Point3D(-1,-6,1),
+                new Point3D(-0.5,-4,0),
+                new Point3D(1,-4,1),
+                new Point3D(2,-6,2),
                 new Mat4Identity(),
                 red.getRGB()
         );

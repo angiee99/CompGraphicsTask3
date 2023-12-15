@@ -8,18 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cubic3D extends Object3D{
-
+    private Cubic cubic;
+    private int smooth;
     public Cubic3D(int smooth, Mat4 cubicType, Point3D p1, Point3D p2,
                    Point3D p3, Point3D p4,
                    Mat4 modelMat, int color) {
         super( new ArrayList<>(),  new ArrayList<>(), modelMat, color);
-        createCubicStructure(smooth, cubicType, p1, p2, p3, p4);
+        this.smooth = smooth;
+        cubic = new Cubic(cubicType, p1, p2, p3, p4);
+        computeVertices();
     }
-
-    private void createCubicStructure(int smooth, Mat4 cubicType, Point3D p1, Point3D p2,
-                                      Point3D p3, Point3D p4) {
-        double step = (Math.PI * 2 / smooth);
-        Cubic cubic = new Cubic(cubicType, p1, p2, p3, p4);
+    public void computeVertices(){
         List<Point3D> vertices = new ArrayList<>();
         List<Integer> indices=new ArrayList<>();
 
@@ -35,4 +34,11 @@ public class Cubic3D extends Object3D{
         this.setIndexBuffer(indices);
     }
 
+    public int getSmooth() {
+        return smooth;
+    }
+
+    public void setSmooth(int smooth) {
+        this.smooth = smooth % 10_000;
+    }
 }
